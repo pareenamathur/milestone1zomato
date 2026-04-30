@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Recommendations</title>
+    <style>
+      :root {
+        --bg-color: #0f172a;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #38bdf8;
+      }
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 40px 20px;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        background: -webkit-linear-gradient(45deg, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+      }
+      .recommendation-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .card {
+        background: var(--card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        border-color: rgba(56, 189, 248, 0.3);
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 12px;
+      }
+      .card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .rank-badge {
+        background: var(--accent);
+        color: #0f172a;
+        font-weight: bold;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      .stats {
+        display: flex;
+        gap: 16px;
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        margin-bottom: 16px;
+      }
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .stat-icon {
+        color: var(--accent);
+      }
+      .cuisines {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .cuisine-tag {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--accent);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .explanation {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        border-radius: 12px;
+        border-left: 4px solid var(--accent);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #e2e8f0;
+      }
+      .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        border: 1px dashed rgba(255,255,255,0.2);
+      }
+      .no-results h2 {
+        margin-bottom: 16px;
+      }
+      .no-results p {
+        color: var(--text-muted);
+        margin-bottom: 24px;
+      }
+      .btn {
+        background: var(--accent);
+        color: #0f172a;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>AI Recommendations</h1>
+        <p>Curated specifically for your preferences</p>
+      </div>
+
+      {% if recommendations %}
+        <div class="recommendation-list">
+          {% for r in recommendations %}
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <div class="rank-badge">{{ r.rank }}</div>
+                  <h2>{{ r.restaurant_name }}</h2>
+                </div>
+              </div>
+              
+              <div class="stats">
+                <div class="stat-item">
+                  <span class="stat-icon">⭐</span>
+                  {{ r.rating if r.rating else 'N/A' }} / 5
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">💰</span>
+                  ₹{{ r.estimated_cost if r.estimated_cost else 'N/A' }}
+                </div>
+              </div>
+
+              <div class="cuisines">
+                {% for cuisine in r.cuisines %}
+                  <span class="cuisine-tag">{{ cuisine }}</span>
+                {% endfor %}
+              </div>
+
+              <div class="explanation">
+                <strong>Why we selected this:</strong><br/>
+                {{ r.explanation }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-results">
+          <h2>No perfect matches found</h2>
+          <p>We couldn't find any restaurants that match all your strict criteria.</p>
+          <p>Try widening your budget, lowering your minimum rating, or selecting more cuisines.</p>
+          <a href="/" class="btn">Update Preferences</a>
+        </div>
+      {% endif %}
+    </div>
+  </body>
+</html>

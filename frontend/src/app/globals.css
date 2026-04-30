@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 15;
+  --background-end-rgb: 20, 20, 30;
+  --accent-color: #7c3aed; /* Violet 600 */
+  --accent-glow: rgba(124, 58, 237, 0.5);
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    )
+    fixed;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+  }
+  
+  .glass-hover {
+    @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
+  }
+
+  .accent-gradient {
+    @apply bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  .btn-premium {
+    @apply relative px-8 py-3 rounded-full font-semibold transition-all duration-300 overflow-hidden;
+    background: linear-gradient(45deg, #7c3aed, #4f46e5);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+  }
+
+  .btn-premium:hover {
+    @apply transform scale-105;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
+}
