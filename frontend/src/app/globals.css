@@ -70,11 +70,15 @@ body {
 }
 /* Ensure form elements have dark theme even in internal browser states */
 select option {
-  @apply bg-slate-900 text-white;
+  @apply bg-slate-900 text-slate-200;
+}
+
+input, textarea, select {
+  @apply text-slate-200 !important;
 }
 
 input::placeholder, textarea::placeholder {
-  @apply text-slate-500;
+  @apply text-slate-500 !important;
 }
 
 input:focus, textarea:focus, select:focus {

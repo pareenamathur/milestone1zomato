@@ -97,7 +97,7 @@ export default function Home() {
                     type="text"
                     required
                     placeholder="e.g., Delhi, Bellandur"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all text-slate-200 placeholder:text-slate-500"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   />
@@ -112,7 +112,7 @@ export default function Home() {
                     type="text"
                     required
                     placeholder="Italian, Chinese, etc."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all text-slate-200 placeholder:text-slate-500"
                     value={formData.cuisines}
                     onChange={(e) => setFormData({ ...formData, cuisines: e.target.value })}
                   />
@@ -122,7 +122,7 @@ export default function Home() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-400">Budget</label>
                 <select
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all appearance-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all appearance-none text-slate-200"
                   value={formData.budget_category}
                   onChange={(e) => setFormData({ ...formData, budget_category: e.target.value })}
                 >
@@ -169,7 +169,7 @@ export default function Home() {
                 <label className="text-sm font-medium text-gray-400">Additional Preferences</label>
                 <textarea
                   placeholder="e.g. outdoor seating, quiet place, romantic vibe..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none h-24"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 focus:ring-2 focus:ring-violet-500 outline-none transition-all resize-none h-32 text-slate-200 placeholder:text-slate-500 leading-relaxed"
                   value={formData.extra_preferences}
                   onChange={(e) => setFormData({ ...formData, extra_preferences: e.target.value })}
                 />
