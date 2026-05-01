@@ -4,10 +4,10 @@
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 10, 10, 15;
-  --background-end-rgb: 20, 20, 30;
-  --accent-color: #7c3aed; /* Violet 600 */
-  --accent-glow: rgba(124, 58, 237, 0.5);
+  --background-start-rgb: 2, 6, 23; /* Very deep navy/black */
+  --background-end-rgb: 15, 23, 42;  /* Slate 900 */
+  --accent-color: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.3);
 }
 
 body {
@@ -67,4 +67,16 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(124, 58, 237, 0.5);
+}
+/* Ensure form elements have dark theme even in internal browser states */
+select option {
+  @apply bg-slate-900 text-white;
+}
+
+input::placeholder, textarea::placeholder {
+  @apply text-slate-500;
+}
+
+input:focus, textarea:focus, select:focus {
+  @apply border-violet-500 ring-1 ring-violet-500;
 }
