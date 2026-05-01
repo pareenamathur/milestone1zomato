@@ -186,8 +186,13 @@ def load_data():
     return get_all_restaurants()
 
 # Main UI
-st.title("🍴 Gourmet AI")
-st.markdown("##### <span style='color: #94a3b8;'>Intelligent restaurant recommendations powered by AI.</span>", unsafe_allow_html=True)
+col_h1, col_h2 = st.columns([4, 1.2])
+with col_h1:
+    st.title("🍴 Gourmet AI")
+    st.markdown("##### <span style='color: #94a3b8;'>Intelligent restaurant recommendations powered by AI.</span>", unsafe_allow_html=True)
+with col_h2:
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='background: rgba(124, 58, 237, 0.1); color: #a78bfa; padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(124, 58, 237, 0.2); text-align: center; letter-spacing: 1px;'>POWERED BY GROQ</div>", unsafe_allow_html=True)
 
 # Sidebar for Preferences
 with st.sidebar:
