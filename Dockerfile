@@ -11,15 +11,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy only application source — no .env or local data files
 COPY src/ ./src/
 
-# Ensure cache directory exists (dataset will be downloaded at runtime)
-RUN mkdir -p .cache
+# Create writable directories for runtime caches
+# - .cache/ : cleaned parquet cache written by the pipeline
+# - /tmp/hf_cache : HuggingFace datasets download cache (writable on Render free tier)
+RUN mkdir -p .cache /tmp/hf_cache
 
-# Set required environment variables (secrets provided at runtime via Render)
+# Environment configuration
 ENV PYTHONPATH=.
 ENV PORT=8000
+ENV HF_HOME=/tmp/hf_cache
+ENV TRANSFORMERS_CACHE=/tmp/hf_cache
 
-# Expose the port
+# Expose the port Render will route to
 EXPOSE 8000
 
-# Start the FastAPI server using uvicorn directly (production-grade)
+# Start the FastAPI server (production-grade, no --reload)
 CMD ["uvicorn", "src.milestone_1.main:app", "--host", "0.0.0.0", "--port", "8000"]
