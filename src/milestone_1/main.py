@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,10 +12,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for frontend integration
+# Enable CORS — restrict to the Vercel frontend in production
+FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
+allow_origins = [FRONTEND_URL] if FRONTEND_URL != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,6 +43,11 @@ async def startup_event():
 @app.get("/")
 async def root():
     return {"message": "Welcome to the AI Restaurant Recommender API", "docs": "/docs"}
+
+@app.get("/health")
+async def health():
+    """Health check endpoint for Render's uptime monitoring."""
+    return {"ok": True, "status": "healthy"}
 
 if __name__ == "__main__":
     # Start the server

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: milestone1-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false          # Set manually in Render dashboard (never committed)
+      - key: FRONTEND_URL
+        sync: false          # Set to your Vercel URL after frontend deploy
+    healthCheckPath: /health

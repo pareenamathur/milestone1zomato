@@ -118,20 +118,31 @@ This document translates `Docs/problemstatement.md` into an implementation-ready
 - **Outputs**
   - A decoupled backend API server and a high-fidelity frontend web application.
 
-## Phase 8 — Rapid Deployment (Streamlit)
-**Goal**: Provide a quick, interactive environment for stakeholders or testing using Streamlit.
+## Phase 8 — Production Deployment (Render + Vercel)
+**Goal**: Deploy the decoupled system to production using free-tier cloud platforms — backend on Render, frontend on Vercel.
 
 - **Core components**
-  - **Streamlit App Layer**
-    - Build a lightweight app (`streamlit_app.py`) that uses Streamlit's built-in widgets for user input.
-    - Directly import the Phase 1–4 pipeline or connect to the Phase 6 API.
-    - Leverage Streamlit's caching (`@st.cache_data`) for the Zomato dataset to ensure sub-second startup.
-  - **Cloud Hosting**
-    - Deploy using **Streamlit Community Cloud** or **Hugging Face Spaces**.
-    - Configure secrets (e.g., `GROQ_API_KEY`) within the hosting platform's dashboard.
+  - **Backend — Render (Docker)**
+    - The FastAPI backend is containerized using `Dockerfile` and deployed as a Render Web Service.
+    - `render.yaml` provides one-click infrastructure configuration.
+    - Secrets (`GROQ_API_KEY`, `FRONTEND_URL`) are injected at runtime via Render's dashboard — never committed to source control.
+    - A `/health` endpoint is exposed for Render's uptime monitoring.
+  - **Frontend — Vercel (Next.js)**
+    - The Next.js frontend is deployed directly from the GitHub repo via Vercel's automatic CI/CD.
+    - `NEXT_PUBLIC_API_URL` env var is set in Vercel's dashboard to point to the Render backend URL.
+    - `vercel.json` and `next.config.js` handle API proxy rewrites so the frontend never hardcodes backend addresses.
+  - **Security**
+    - CORS is locked to the Vercel domain via the `FRONTEND_URL` env var on Render.
+    - All secrets remain in platform dashboards and `.env` files which are git-ignored.
+- **Deployment flow**
+  1. Push code to GitHub `main` branch
+  2. Render auto-deploys backend from Dockerfile
+  3. Vercel auto-deploys frontend from `frontend/` directory
 - **Outputs**
-  - A publicly accessible, interactive demo URL for the restaurant recommendation system.
+  - Backend: `https://<service>.onrender.com` (FastAPI + Swagger docs at `/docs`)
+  - Frontend: `https://<project>.vercel.app` (production Next.js app)
 
 ## End-to-end flow (summary)
 **Backend**: `UserPreferences` → Validation/Normalization → Structured Filter/Score → Top-N `CandidateSet` → Prompt → LLM Rank + Explain → Parse/Validate → JSON API Response
 **Frontend**: User Form → Loading State → Fetch API → Render Premium UI
+

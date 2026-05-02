@@ -1,28 +1,25 @@
-# Use official Python image
+# Use official Python slim image
 FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies first (Docker layer caching)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy only application source — no .env or local data files
 COPY src/ ./src/
-COPY .env .env
-# Ensure cache dir exists for dataset
+
+# Ensure cache directory exists (dataset will be downloaded at runtime)
 RUN mkdir -p .cache
 
-# Copy dataset (or download on start if not present)
-# Note: For production, you might want to fetch this from a CDN instead of baking into image
-COPY .cache/zomato.csv .cache/zomato.csv
-
-# Set environment variables
+# Set required environment variables (secrets provided at runtime via Render)
 ENV PYTHONPATH=.
+ENV PORT=8000
 
-# Expose port
+# Expose the port
 EXPOSE 8000
 
-# Start server
-CMD ["python", "-m", "src.milestone_1.main"]
+# Start the FastAPI server using uvicorn directly (production-grade)
+CMD ["uvicorn", "src.milestone_1.main:app", "--host", "0.0.0.0", "--port", "8000"]
