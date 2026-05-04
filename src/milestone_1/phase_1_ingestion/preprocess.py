@@ -1,4 +1,3 @@
-import pandas as pd
 import hashlib
 import re
 from typing import List, Any
@@ -7,19 +6,6 @@ from src.milestone_1.phase_0_setup.config import AppConfig, get_config
 from src.milestone_1.phase_0_setup.utils import logger
 
 _NUMBER_RE = re.compile(r"(\d+(?:[,\s]\d+)*)")
-
-def _pick_column(columns: list[str], preferred: str, fallbacks: list[str]) -> str | None:
-    if preferred in columns:
-        return preferred
-    lowered = {c.lower(): c for c in columns}
-    if preferred.lower() in lowered:
-        return lowered[preferred.lower()]
-    for fb in fallbacks:
-        if fb in columns:
-            return fb
-        if fb.lower() in lowered:
-            return lowered[fb.lower()]
-    return None
 
 def _stable_id(name: str, location: str) -> str:
     """Generate a stable ID based on name and location only."""
@@ -54,24 +40,21 @@ def parse_cost(value: Any) -> int | None:
         return c if c >= 0 else None
     except ValueError: return None
 
-def clean_and_transform(df: pd.DataFrame, cfg: AppConfig | None = None) -> List[RestaurantRecord]:
+def clean_and_transform(data: List[dict], cfg: AppConfig | None = None) -> List[RestaurantRecord]:
+    """
+    Transforms a list of raw dictionaries into RestaurantRecord objects.
+    Optimized for memory: No Pandas dependency here.
+    """
     cfg = cfg or get_config()
-    cols = list(df.columns)
-
-    col_name = _pick_column(cols, cfg.col_name, ["name", "restaurant name", "Restaurant"])
-    col_location = _pick_column(cols, cfg.col_location, ["location", "city", "Locality"])
-    col_cuisines = _pick_column(cols, cfg.col_cuisines, ["cuisine", "cuisines"])
-    col_rating = _pick_column(cols, cfg.col_rating, ["rating", "rate", "Aggregate rating"])
-    col_cost = _pick_column(cols, cfg.col_cost, ["cost", "approx_cost(for two people)", "Average Cost for two"])
-
+    
     records: List[RestaurantRecord] = []
     seen = set()
     duplicate_count = 0
     
-    for idx, row in df.iterrows():
+    for row in data:
         try:
-            name = " ".join(str(row.get(col_name)).strip().split())
-            location = " ".join(str(row.get(col_location)).strip().split()).lower()
+            name = " ".join(str(row.get(cfg.col_name)).strip().split())
+            location = " ".join(str(row.get(cfg.col_location)).strip().split()).lower()
             if not name or not location: continue
 
             # Deduplication
@@ -81,9 +64,11 @@ def clean_and_transform(df: pd.DataFrame, cfg: AppConfig | None = None) -> List[
                 continue
             seen.add(restaurant_key)
 
-            cuisines = [c.strip().lower() for c in str(row.get(col_cuisines)).replace("|", ",").split(",")] if col_cuisines else []
-            rating = parse_rating(row.get(col_rating)) if col_rating else None
-            cost = parse_cost(row.get(col_cost)) if col_cost else None
+            cuisines_raw = row.get(cfg.col_cuisines)
+            cuisines = [c.strip().lower() for c in str(cuisines_raw).replace("|", ",").split(",")] if cuisines_raw else []
+            
+            rating = parse_rating(row.get(cfg.col_rating))
+            cost = parse_cost(row.get(cfg.col_cost))
             
             # Price category
             price_category = "unknown"

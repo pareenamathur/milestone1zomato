@@ -1,48 +1,41 @@
-import pandas as pd
-from pathlib import Path
 from datasets import load_dataset
 from src.milestone_1.phase_0_setup.config import AppConfig, get_config
 from src.milestone_1.phase_0_setup.utils import logger
 
-def fetch_data(cfg: AppConfig | None = None) -> pd.DataFrame:
+def fetch_data(cfg: AppConfig | None = None) -> list[dict]:
     """
-    Loads raw dataset into a pandas DataFrame.
-    Optimized for memory: loads only required columns and limits to 2000 rows.
+    Loads raw dataset into a list of dictionaries.
+    ULTRA-OPTIMIZED for memory:
+    1. Uses streaming=True to avoid downloading full dataset.
+    2. Strictly limits to 500 rows.
+    3. Avoids Pandas overhead entirely.
     """
     cfg = cfg or get_config()
-    logger.info(f"Checking for local dataset in {cfg.cache_dir}...")
+    logger.info(f"Fetching data from Hugging Face (STREAMING): {cfg.dataset_id}")
     
-    usecols = ['name', 'location', 'cuisines', 'rate', 'approx_cost(for two people)']
+    usecols = [cfg.col_name, cfg.col_location, cfg.col_cuisines, cfg.col_rating, cfg.col_cost]
     
-    local_csv = Path(cfg.cache_dir) / "zomato.csv"
-    if local_csv.exists():
-        logger.info(f"Loading raw dataset from local file: {local_csv}")
-        try:
-            # We drop NaNs in core columns early and strictly limit to 500 rows during read
-            df = pd.read_csv(local_csv, usecols=lambda c: c in usecols, nrows=500)
-            df = df.dropna(subset=[c for c in ['location', 'cuisines', 'rate', 'approx_cost(for two people)'] if c in df.columns])
-            return df
-        except Exception as e:
-            logger.error(f"Failed to read local CSV: {e}")
-    
-    logger.info(f"Local file not found or failed. Fetching from Hugging Face: {cfg.dataset_id}")
     try:
-        # EXTREME MEMORY OPTIMIZATION: Max 500 rows to ensure we stay well below 512MB
-        ds = load_dataset(cfg.dataset_id, split='train[:500]')
+        # streaming=True ensures we don't load the entire 50k+ rows into memory.
+        # It yields one row at a time.
+        ds = load_dataset(cfg.dataset_id, split='train', streaming=True)
         
-        # Select ONLY required columns BEFORE converting to Pandas.
-        # This prevents loading heavy text arrays (like reviews) into RAM.
-        existing_cols = [c for c in usecols if c in ds.column_names]
-        ds = ds.select_columns(existing_cols)
-        
-        df = ds.to_pandas()
-        
-        # Drop rows with missing critical info
-        critical_cols = [c for c in ['location', 'cuisines', 'rate', 'approx_cost(for two people)'] if c in df.columns]
-        if critical_cols:
-            df = df.dropna(subset=critical_cols)
+        records = []
+        count = 0
+        for row in ds:
+            # Only pick the columns we need
+            record = {col: row.get(col) for col in usecols if col in row}
             
-        return df
+            # Basic validation: ensure we have at least name and location
+            if record.get(cfg.col_name) and record.get(cfg.col_location):
+                records.append(record)
+                count += 1
+            
+            if count >= 500:
+                break
+                
+        logger.info(f"Successfully fetched {len(records)} records using streaming.")
+        return records
     except Exception as e:
-        logger.error(f"Failed to fetch data from Hugging Face: {e}")
-        return pd.DataFrame()
+        logger.error(f"Failed to fetch data using streaming: {e}")
+        return []

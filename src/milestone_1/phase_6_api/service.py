@@ -15,9 +15,9 @@ def get_all_restaurants():
     """
     global _cached_restaurants
     if not _cached_restaurants:
-        df = fetch_data()
-        if not df.empty:
-            _cached_restaurants = clean_and_transform(df)
+        data = fetch_data()
+        if data:
+            _cached_restaurants = clean_and_transform(data)
             logger.info(f"Loaded and cached {len(_cached_restaurants)} restaurants.")
         else:
             logger.error("Dataset is empty or could not be loaded.")
