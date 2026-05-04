@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CraveAI — Restaurant Finder</title>
+  <title>CraveAI — Discover the Best Food</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 </head>
 <body>
 
@@ -14,81 +14,86 @@
   <header class="header">
     <div class="header-inner container">
       <div class="logo-group">
-        <div class="logo">CraveAI</div>
-        <div class="logo-sub">Restaurant Finder</div>
+        <div class="logo-icon">C</div>
+        <div class="logo-text">CraveAI</div>
       </div>
-      <nav class="nav">
-        <a href="#" class="nav-link active">Explore</a>
-        <a href="#" class="nav-link">Collections</a>
-        <a href="#" class="nav-link">About AI</a>
-      </nav>
+      <div class="header-actions">
+        <span style="color: var(--zomato-gray); font-size: 0.9rem; font-weight: 500;">Log in</span>
+      </div>
     </div>
   </header>
 
-  <!-- ── HERO / SEARCH ────────────────────────────────────── -->
-  <section class="hero-section container">
-    <h1 class="hero-title">Find your next favorite meal.</h1>
-    <p class="hero-sub">AI-powered recommendations tailored to your exact location, budget, and cravings.</p>
-    
-    <div class="filter-card">
-      <div class="filter-group">
-        <label class="filter-label">LOCATION</label>
-        <input id="input-location" class="filter-input" type="text" placeholder="Where are you? (e.g. BTM, Indiranagar)" value="Bellandur" />
-      </div>
-      
-      <div class="filter-group">
-        <label class="filter-label">CUISINES</label>
-        <input id="input-cuisines" class="filter-input" type="text" placeholder="Italian, Chinese, etc." value="Italian, Indian" />
-      </div>
+  <!-- ── HERO SECTION ─────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-content container">
+      <h1 class="hero-title">Find the best restaurants, cafés, and bars</h1>
+      <p class="hero-sub">AI-powered discovery for the perfect meal</p>
+    </div>
+  </section>
 
-      <div class="filter-group">
-        <label class="filter-label">BUDGET LEVEL</label>
-        <div class="budget-tabs">
-          <button class="budget-tab" data-value="low">Low</button>
-          <button class="budget-tab active" data-value="medium">Medium</button>
-          <button class="budget-tab" data-value="high">High</button>
+  <!-- ── SEARCH / FILTERS ─────────────────────────────────── -->
+  <div class="search-container container">
+    <div class="search-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label class="filter-label">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Location
+          </label>
+          <input id="input-location" class="filter-input" type="text" placeholder="e.g. Bangalore, BTM" value="Bellandur" />
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Cuisines
+          </label>
+          <input id="input-cuisines" class="filter-input" type="text" placeholder="e.g. Italian, North Indian" value="Italian, Indian" />
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Budget</label>
+          <div class="budget-tabs">
+            <button class="budget-tab" data-value="low">Low</button>
+            <button class="budget-tab active" data-value="medium">Mid</button>
+            <button class="budget-tab" data-value="high">High</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Rating (<span id="rating-val">3.5</span>+)</label>
+          <input id="input-rating" class="rating-slider" type="range" min="0" max="5" step="0.1" value="3.5" />
         </div>
       </div>
 
       <div class="filter-group">
-        <label class="filter-label">MINIMUM RATING (<span id="rating-val">3.5</span>+)</label>
-        <input id="input-rating" class="rating-slider" type="range" min="0" max="5" step="0.1" value="3.5" />
+        <label class="filter-label">What are you looking for?</label>
+        <input id="input-prefs" class="filter-input" type="text" placeholder="e.g. Rooftop seating, quiet atmosphere, live music..." />
       </div>
 
-      <div class="filter-group filter-group--full">
-        <label class="filter-label">SPECIFIC CRAVINGS (OPTIONAL)</label>
-        <input id="input-prefs" class="filter-input" type="text" placeholder="e.g. Rooftop seating, quiet for work, spicy food" />
-      </div>
-
-      <button id="btn-recommend" class="btn-recommend">
-        <span id="btn-text">Find Best Matches</span>
+      <button id="btn-recommend" class="btn-search">
+        <span id="btn-text">Discover Restaurants</span>
       </button>
     </div>
-  </section>
+  </div>
 
   <!-- ── MAIN CONTENT ───────────────────────────────────── -->
   <main class="main container">
-    <div class="results-header" id="results-header" style="display:none;">
-      <h2 class="results-title">Handpicked for you</h2>
+    <div id="results-header" style="display:none; margin-bottom: 24px;">
+      <h2 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em;">Recommended for You</h2>
     </div>
 
     <div id="results-grid" class="results-grid"></div>
 
-    <div id="loading-state" class="loading-state" style="display:none;">
+    <div id="loading-state" class="loading-overlay" style="display:none;">
       <div class="spinner"></div>
-      <p>Consulting our culinary AI...</p>
+      <p style="font-weight: 600; color: var(--zomato-gray);">Searching for the perfect spots...</p>
     </div>
 
-    <div id="empty-state" class="empty-state">
-      <p>Enter your preferences and click "Find Best Matches" to start.</p>
+    <div id="empty-state" class="loading-overlay">
+      <p style="color: var(--zomato-gray);">Start your search to see personalized AI recommendations.</p>
     </div>
   </main>
-
-  <footer class="footer">
-    <div class="container">
-      <p>© 2024 CraveAI — Powered by Groq AI and Zomato Intelligence</p>
-    </div>
-  </footer>
 
   <script src="script.js"></script>
 </body>

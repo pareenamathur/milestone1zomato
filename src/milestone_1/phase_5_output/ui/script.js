@@ -1,6 +1,6 @@
 /**
  * CraveAI — script.js
- * Connects the modern UI to the FastAPI backend.
+ * Connects the Zomato-inspired UI to the FastAPI backend.
  */
 
 // ── CONFIG ────────────────────────────────────────────────────
@@ -46,7 +46,7 @@ function showLoading() {
   loadingState.style.display  = "block";
   emptyState.style.display    = "none";
   btnRecommend.disabled = true;
-  btnText.textContent = "Finding restaurants...";
+  btnText.textContent = "Searching spots...";
 }
 
 function showEmpty(msg) {
@@ -54,18 +54,18 @@ function showEmpty(msg) {
   resultsGrid.innerHTML   = "";
   resultsHeader.style.display = "none";
   emptyState.style.display    = "block";
-  emptyState.querySelector("p").textContent = msg || 'No matches found. Try broadening your preferences.';
+  emptyState.querySelector("p").textContent = msg || 'No results found. Try adjusting your filters.';
   btnRecommend.disabled = false;
-  btnText.textContent = "Find Best Matches";
+  btnText.textContent = "Discover Restaurants";
 }
 
 function showResults(recs) {
   loadingState.style.display  = "none";
   emptyState.style.display    = "none";
-  resultsHeader.style.display = "flex";
+  resultsHeader.style.display = "block";
   resultsGrid.innerHTML       = recs.map(buildCard).join("");
   btnRecommend.disabled = false;
-  btnText.textContent = "Find Best Matches";
+  btnText.textContent = "Discover Restaurants";
 }
 
 // ── CARD BUILDER ──────────────────────────────────────────────
@@ -74,23 +74,30 @@ function buildCard(rec) {
   const cost     = rec.estimated_cost || "N/A";
   const cuisines = Array.isArray(rec.cuisines) ? rec.cuisines.join(", ") : (rec.cuisines || "Various");
   const name     = rec.restaurant_name || "Unknown";
-  const explain  = rec.explanation || "Highly recommended based on your preferences.";
+  const explain  = rec.explanation || "Top choice matching your preferences.";
 
   return `
     <div class="card">
-      <div class="card-badge">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-        ${rating}
+      <div class="card-img-placeholder">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
       </div>
-      <h3 class="card-name">${escapeHtml(name)}</h3>
-      <div class="card-meta">
-        <div class="meta-item">${escapeHtml(cuisines)}</div>
-        <div class="meta-item">|</div>
-        <div class="meta-item">₹${escapeHtml(String(cost))} for two</div>
-      </div>
-      <div class="card-explanation">
-        <span class="exp-label">AI Explanation</span>
-        ${escapeHtml(explain)}
+      <div class="card-content">
+        <div class="card-header">
+          <h3 class="card-title">${escapeHtml(name)}</h3>
+          <div class="card-rating">
+            ${rating} 
+            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          </div>
+        </div>
+        <div class="card-cuisines">${escapeHtml(cuisines)}</div>
+        <div class="ai-box">
+          <span class="ai-label">AI Review</span>
+          ${escapeHtml(explain)}
+        </div>
+        <div class="card-footer">
+          <span>${escapeHtml(inputLocation.value)}</span>
+          <span class="cost-tag">₹${escapeHtml(String(cost))} for two</span>
+        </div>
       </div>
     </div>`;
 }
@@ -132,10 +139,10 @@ async function fetchRecommendations() {
     if (data.ok && data.recommendations && data.recommendations.length > 0) {
       showResults(data.recommendations);
     } else {
-      showEmpty("We couldn't find matches for those exact filters. Try a different location or lower rating.");
+      showEmpty("No matching restaurants found in this area.");
     }
   } catch (err) {
-    showEmpty("Connection error. Please ensure the backend is running.");
+    showEmpty("Unable to reach the server. Please check your connection.");
   }
 }
 
