@@ -118,21 +118,19 @@ This document translates `Docs/problemstatement.md` into an implementation-ready
 - **Outputs**
   - A decoupled backend API server and a high-fidelity frontend web application.
 
-## Phase 8 — Production Deployment (Render + Vercel)
-**Goal**: Deploy the decoupled system to production using free-tier cloud platforms — backend on Render, frontend on Vercel.
+## Phase 8 — Production Deployment (Railway + Vercel)
+**Goal**: Deploy the decoupled system to production using modern cloud platforms — backend on Railway, frontend on Vercel.
 
 - **Core components**
-  - **Backend — Render (Docker)**
-    - The FastAPI backend is containerized using `Dockerfile` and deployed as a Render Web Service.
-    - `render.yaml` provides one-click infrastructure configuration.
-    - Secrets (`GROQ_API_KEY`, `FRONTEND_URL`) are injected at runtime via Render's dashboard — never committed to source control.
-    - A `/health` endpoint is exposed for Render's uptime monitoring.
-  - **Frontend — Vercel (Next.js)**
-    - The Next.js frontend is deployed directly from the GitHub repo via Vercel's automatic CI/CD.
-    - `NEXT_PUBLIC_API_URL` env var is set in Vercel's dashboard to point to the Render backend URL.
-    - `vercel.json` and `next.config.js` handle API proxy rewrites so the frontend never hardcodes backend addresses.
-  - **Security**
-    - CORS is locked to the Vercel domain via the `FRONTEND_URL` env var on Render.
+  - **Backend — Railway (Docker)**
+    - The FastAPI backend is containerized using `Dockerfile` and deployed on Railway.
+    - Railway natively assigns dynamic `$PORT` variables, and the `Dockerfile` was updated to support this seamlessly.
+    - Secrets (`GROQ_API_KEY`, `FRONTEND_URL`) are injected securely at runtime via the Railway dashboard.
+    - A `/health` endpoint is exposed for uptime monitoring.
+  - **Frontend — Vercel (Static UI)**
+    - The new CraveAI standalone HTML/JS frontend is deployed directly from the GitHub repo via Vercel's automatic CI/CD.
+    - Vercel uses `vercel.json` to proxy API requests securely to the Railway backend.  - **Security**
+    - CORS is locked to the Vercel domain via the `FRONTEND_URL` env var on Railway.
     - All secrets remain in platform dashboards and `.env` files which are git-ignored.
 - **Deployment flow**
   1. Push code to GitHub `main` branch

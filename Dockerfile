@@ -25,5 +25,5 @@ ENV TRANSFORMERS_CACHE=/tmp/hf_cache
 # Expose the port Render will route to
 EXPOSE 8000
 
-# Start the FastAPI server (production-grade, no --reload)
-CMD ["uvicorn", "src.milestone_1.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the FastAPI server (production-grade, dynamic port for Railway)
+CMD ["sh", "-c", "uvicorn src.milestone_1.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
