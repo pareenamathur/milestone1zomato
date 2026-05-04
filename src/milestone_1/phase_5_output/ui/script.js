@@ -5,7 +5,10 @@
  */
 
 // ── CONFIG ────────────────────────────────────────────────────
-const API_BASE = window.API_BASE_URL || "http://localhost:8000";
+// If running locally, use localhost:8000. In production on Vercel, use a relative path
+// so that the vercel.json API rewrite proxies the request to the Render backend.
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASE = window.API_BASE_URL || (isLocalhost ? "http://localhost:8000" : "");
 const ENDPOINT = `${API_BASE}/api/v1/recommend`;
 
 // ── DOM REFERENCES ────────────────────────────────────────────
