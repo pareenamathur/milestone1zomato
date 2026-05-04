@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://milestone1-backend-gxpa.onrender.com/api/:path*"
+      "destination": "milestone1zomato-production.up.railway.app"
     }
   ]
 }
