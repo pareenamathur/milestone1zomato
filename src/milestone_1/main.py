@@ -3,7 +3,6 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.milestone_1.phase_6_api.routes import router
-from src.milestone_1.phase_6_api.service import get_all_restaurants
 from src.milestone_1.phase_0_setup.utils import logger
 
 app = FastAPI(
@@ -32,13 +31,8 @@ async def startup_event():
     """
     Actions to perform on application startup.
     """
-    logger.info("Starting up AI Restaurant Recommender API...")
-    # Pre-load and cache the dataset to ensure fast response times
-    try:
-        get_all_restaurants()
-        logger.info("Dataset loaded and system ready.")
-    except Exception as e:
-        logger.error(f"Failed to initialize dataset: {e}")
+    logger.info("Starting up AI Restaurant Recommender API (Lazy loading dataset enabled)...")
+
 
 @app.get("/")
 async def root():
