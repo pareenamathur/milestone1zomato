@@ -18,8 +18,8 @@ def fetch_data(cfg: AppConfig | None = None) -> pd.DataFrame:
     if local_csv.exists():
         logger.info(f"Loading raw dataset from local file: {local_csv}")
         try:
-            # We drop NaNs in core columns early and strictly limit to 2000 rows during read
-            df = pd.read_csv(local_csv, usecols=lambda c: c in usecols, nrows=2000)
+            # We drop NaNs in core columns early and strictly limit to 500 rows during read
+            df = pd.read_csv(local_csv, usecols=lambda c: c in usecols, nrows=500)
             df = df.dropna(subset=[c for c in ['location', 'cuisines', 'rate', 'approx_cost(for two people)'] if c in df.columns])
             return df
         except Exception as e:
@@ -27,14 +27,15 @@ def fetch_data(cfg: AppConfig | None = None) -> pd.DataFrame:
     
     logger.info(f"Local file not found or failed. Fetching from Hugging Face: {cfg.dataset_id}")
     try:
-        # CRITICAL FIX for Render OOM: Only download/load the first 2000 rows from HF into memory!
-        # By specifying split, load_dataset returns a Dataset instead of a DatasetDict
-        ds = load_dataset(cfg.dataset_id, split='train[:2000]')
-        df = ds.to_pandas()
+        # EXTREME MEMORY OPTIMIZATION: Max 500 rows to ensure we stay well below 512MB
+        ds = load_dataset(cfg.dataset_id, split='train[:500]')
         
-        # Keep only required columns to free up memory immediately
-        existing_cols = [c for c in usecols if c in df.columns]
-        df = df[existing_cols]
+        # Select ONLY required columns BEFORE converting to Pandas.
+        # This prevents loading heavy text arrays (like reviews) into RAM.
+        existing_cols = [c for c in usecols if c in ds.column_names]
+        ds = ds.select_columns(existing_cols)
+        
+        df = ds.to_pandas()
         
         # Drop rows with missing critical info
         critical_cols = [c for c in ['location', 'cuisines', 'rate', 'approx_cost(for two people)'] if c in df.columns]
